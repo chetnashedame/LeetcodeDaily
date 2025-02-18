@@ -1,41 +1,43 @@
 class Solution {
     public String minWindow(String s, String t) {
-        if (s.length() < t.length()) return "";
+        if(s.length()<t.length())
+        return "";
 
-        HashMap<Character, Integer> map = new HashMap<>();
-        for (char c : t.toCharArray()) {
-            map.put(c, map.getOrDefault(c, 0) + 1);
-        }
+        HashMap<Character, Integer> tfreq=new HashMap<>(256);
+        HashMap<Character, Integer> winfreq=new HashMap<>(256);
+           
+        for(char c:t.toCharArray()){
+            tfreq.put(c, tfreq.getOrDefault(c, 0)+1);
+        }   
 
-        int left = 0, right = 0, minLength = Integer.MAX_VALUE, start = 0;
-        int required = map.size();
-        int formed = 0;
-        HashMap<Character, Integer> windowCounts = new HashMap<>();
+        int left=0, right=0, minlength=Integer.MAX_VALUE, start=0;
+        int required=tfreq.size();
+        int count=0; 
 
-        while (right < s.length()) {
-            char c = s.charAt(right);
-            windowCounts.put(c, windowCounts.getOrDefault(c, 0) + 1);
+        while(right<s.length()){
+            char c= s.charAt(right);
+            winfreq.put(c, winfreq.getOrDefault(c, 0)+1);
 
-            if (map.containsKey(c) && windowCounts.get(c).intValue() == map.get(c).intValue()) {
-                formed++;
+            if(tfreq.containsKey(c) && winfreq.get(c).intValue()==tfreq.get(c).intValue()){
+                count++;
             }
 
-            while (left <= right && formed == required) {
-                c = s.charAt(left);
-                if (right - left + 1 < minLength) {
-                    minLength = right - left + 1;
-                    start = left;
+            while(count == required){
+                if(right-left+1<minlength){
+                    minlength=right-left+1;
+                    start=left;
                 }
+                char l=s.charAt(left);
+                winfreq.put(l, winfreq.getOrDefault(l,0)-1);
 
-                windowCounts.put(c, windowCounts.get(c) - 1);
-                if (map.containsKey(c) && windowCounts.get(c).intValue() < map.get(c).intValue()) {
-                    formed--;
+                if(tfreq.containsKey(l) && winfreq.get(l)<tfreq.get(l)){
+                    count--;
                 }
                 left++;
             }
             right++;
-        }
 
-        return minLength == Integer.MAX_VALUE ? "" : s.substring(start, start + minLength);    
-    }
+        }
+        return minlength==Integer.MAX_VALUE ? "" : s.substring(start, start+minlength);
+    }    
 }
